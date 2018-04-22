@@ -1,0 +1,6 @@
+[package]
+name = "rkata"
+version = "0.1.0"
+authors = ["Jon <dyercode@gmail.com>"]
+
+[dependencies]
