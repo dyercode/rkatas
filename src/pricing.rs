@@ -19,19 +19,18 @@ const FIFTEEN_PERCENT: f64 = 0.15;
 const TEN_PERCENT: f64 = 0.1;
 
 fn discount(item: Item) -> Item {
-    if (item.product_type == ProductType::Alcohol) {
-        item
+    let discount_percent = if (item.product_type == ProductType::Alcohol) {
+        0.0
+    } else if (item.price >= 1000.00) {
+        FIFTEEN_PERCENT
+    } else if (item.price >= TEN_PERCENT_OFF_FLOOR) {
+        TEN_PERCENT
     } else {
-        let discounted_price = if (item.price >= 1000.00) {
-            item.price * (1.0 - FIFTEEN_PERCENT)
-        } else if (item.price >= TEN_PERCENT_OFF_FLOOR) {
-            item.price * (1.0 - TEN_PERCENT)
-        } else {
-            item.price
-        };
+        0.0
+    };
 
-        Item { price: discounted_price, product_type: item.product_type }
-    }
+    let discounted_price = item.price * (1.0 - discount_percent);
+    Item { price: discounted_price, product_type: item.product_type }
 }
 
 fn pricing(item: Item) -> f64 {
