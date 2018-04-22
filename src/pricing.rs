@@ -19,15 +19,19 @@ const FIFTEEN_PERCENT: f64 = 0.15;
 const TEN_PERCENT: f64 = 0.1;
 
 fn discount(item: Item) -> Item {
-    let discounted_price = if (item.price >= 1000.00) {
-        item.price * (1.0 - FIFTEEN_PERCENT)
-    } else if (item.price >= TEN_PERCENT_OFF_FLOOR) {
-        item.price * (1.0 - TEN_PERCENT)
+    if (item.product_type == ProductType::Alcohol) {
+        item
     } else {
-        item.price
-    };
+        let discounted_price = if (item.price >= 1000.00) {
+            item.price * (1.0 - FIFTEEN_PERCENT)
+        } else if (item.price >= TEN_PERCENT_OFF_FLOOR) {
+            item.price * (1.0 - TEN_PERCENT)
+        } else {
+            item.price
+        };
 
-    Item { price: discounted_price, product_type: item.product_type }
+        Item { price: discounted_price, product_type: item.product_type }
+    }
 }
 
 fn pricing(item: Item) -> f64 {
@@ -88,12 +92,18 @@ fn discounts_on_sticker_tax_on_discounted_price() {
     assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Other }), 96.75)
 }
 
+#[test]
+fn alcohol_must_not_be_discounted() {
+    assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Alcohol }), 115.50)
+}
+
 
 struct Item {
     price: f64,
     product_type: ProductType,
 }
 
+#[derive(PartialEq)]
 enum ProductType {
     Other,
     Food,
