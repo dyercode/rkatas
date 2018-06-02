@@ -61,4 +61,3 @@ mod tests {
         assert_eq!(*closest_to_zero(&numbers).unwrap(), 1)
     }
 }
-

@@ -110,5 +110,3 @@ mod test {
         assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Alcohol }), 115.50)
     }
 }
-
-
