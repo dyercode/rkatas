@@ -5,6 +5,7 @@
 use std::option::Option::None;
 use std::option::Option::Some;
 
+#[allow(dead_code)]
 fn closest_to_zero_mins<'a>(numbers: &'a Vec<i32>) -> Option<&'a i32> {
     let least_positive: Option<&'a i32> = numbers.iter().filter(|x| **x >= 0).min();
     let least_negative: Option<&'a i32> = numbers.iter().filter(|x| **x < 0).max();
@@ -27,7 +28,6 @@ pub fn closest_to_zero(numbers: &Vec<i32>) -> Option<&i32> {
         }
     })
 }
-
 
 #[cfg(test)]
 mod tests {
