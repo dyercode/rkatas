@@ -1,2 +1,2 @@
-pub mod zero_kata;
 pub mod pricing;
+pub mod zero_kata;

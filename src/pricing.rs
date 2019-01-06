@@ -30,18 +30,21 @@ fn discount(item: Item) -> Item {
     };
 
     let discounted_price = item.price * (1.0 - discount_percent);
-    Item { price: discounted_price, product_type: item.product_type }
+    Item {
+        price: discounted_price,
+        product_type: item.product_type,
+    }
 }
 
 pub fn pricing(item: Item) -> f64 {
-    calculate_tax(discount(item))
+    calculate_tax(&discount(item))
 }
 
-fn calculate_tax(item: Item) -> f64 {
+fn calculate_tax(item: &Item) -> f64 {
     match item.product_type {
         ProductType::Food => item.price,
         ProductType::Alcohol => item.price * (1.0 + SALES_TAX_PERCENT + SIN_TAX_PERCENT),
-        _ => item.price * (1.0 + SALES_TAX_PERCENT)
+        _ => item.price * (1.0 + SALES_TAX_PERCENT),
     }
 }
 
@@ -60,53 +63,115 @@ pub enum ProductType {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::f64::EPSILON;
+
     #[test]
     fn pay_full_price_under_100() {
-        assert_eq!(pricing(Item { price: 99.99, product_type: ProductType::Food }), 99.99)
+        assert!(
+            pricing(Item {
+                price: 99.99,
+                product_type: ProductType::Food
+            }) - 99.99
+                < EPSILON
+        )
     }
 
     #[test]
     fn ten_percent_off_over_100() {
-        assert_eq!(pricing(Item { price: 110.00, product_type: ProductType::Food }), 99.00)
+        assert!(
+            pricing(Item {
+                price: 110.00,
+                product_type: ProductType::Food
+            }) - 99.00
+                < EPSILON
+        )
     }
 
     #[test]
     fn ten_percent_off_on_100_exactly() {
-        assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Food }), 90.00)
+        assert!(
+            pricing(Item {
+                price: 100.00,
+                product_type: ProductType::Food
+            }) - 90.00
+                < EPSILON
+        )
     }
 
     #[test]
     fn fifteen_percent_off_on_1000() {
-        assert_eq!(pricing(Item { price: 1000.00, product_type: ProductType::Food }), 850.00)
+        assert!(
+            pricing(Item {
+                price: 1000.00,
+                product_type: ProductType::Food
+            }) - 850.00
+                < EPSILON
+        )
     }
 
     #[test]
     fn fifteen_percent_off_above_1000() {
-        assert_eq!(pricing(Item { price: 1500.00, product_type: ProductType::Food }), 1275.00)
+        assert!(
+            pricing(Item {
+                price: 1500.00,
+                product_type: ProductType::Food
+            }) - 1275.00
+                < EPSILON
+        )
     }
 
     #[test]
     fn other_items_have_7_5_percent_sales_tax() {
-        assert_eq!(pricing(Item { price: 10.00, product_type: ProductType::Other }), 10.75)
+        assert!(
+            pricing(Item {
+                price: 10.00,
+                product_type: ProductType::Other
+            }) - 10.75
+                < EPSILON
+        )
     }
 
     #[test]
     fn food_items_must_not_be_taxed() {
-        assert_eq!(pricing(Item { price: 10.00, product_type: ProductType::Food }), 10.00)
+        assert!(
+            pricing(Item {
+                price: 10.00,
+                product_type: ProductType::Food
+            }) - 10.00
+                < EPSILON
+        )
     }
 
     #[test]
     fn alcohol_must_have_a_sin_tax() {
-        assert_eq!(pricing(Item { price: 10.00, product_type: ProductType::Alcohol }), 11.55)
+        assert!(
+            pricing(Item {
+                price: 10.00,
+                product_type: ProductType::Alcohol
+            }) - 11.55
+                < EPSILON
+        )
     }
 
     #[test]
     fn discounts_on_sticker_tax_on_discounted_price() {
-        assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Other }), 96.75)
+        assert!(
+            pricing(Item {
+                price: 100.00,
+                product_type: ProductType::Other
+            }) - 96.75
+                < EPSILON
+        )
     }
 
     #[test]
     fn alcohol_must_not_be_discounted() {
-        assert_eq!(pricing(Item { price: 100.00, product_type: ProductType::Alcohol }), 115.50)
+        assert!(
+            pricing(Item {
+                price: 100.00,
+                product_type: ProductType::Alcohol
+            }) - 115.50
+                < EPSILON
+        )
     }
 }

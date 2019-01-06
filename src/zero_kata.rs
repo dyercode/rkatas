@@ -6,23 +6,35 @@ use std::option::Option::None;
 use std::option::Option::Some;
 
 #[allow(dead_code)]
-fn closest_to_zero_mins<'a>(numbers: &'a Vec<i32>) -> Option<&'a i32> {
+fn closest_to_zero_mins<'a>(numbers: &'a [i32]) -> Option<&'a i32> {
     let least_positive: Option<&'a i32> = numbers.iter().filter(|x| **x >= 0).min();
     let least_negative: Option<&'a i32> = numbers.iter().filter(|x| **x < 0).max();
     match (least_positive, least_negative) {
-        (Some(_p), Some(_n)) => if _p < &_n.abs() { least_positive } else { least_negative },
+        (Some(_p), Some(_n)) => {
+            if *_p < _n.abs() {
+                least_positive
+            } else {
+                least_negative
+            }
+        }
         (Some(_p), None) => least_positive,
         (None, Some(_n)) => least_negative,
         (None, None) => None,
     }
 }
 
-pub fn closest_to_zero(numbers: &Vec<i32>) -> Option<&i32> {
+pub fn closest_to_zero(numbers: &[i32]) -> Option<&i32> {
     numbers.iter().fold(None, |acc, val| {
-        if acc.is_none() { Some(val) } else {
+        if acc.is_none() {
+            Some(val)
+        } else {
             acc.map(|closest| {
-                if val.abs() == closest.abs() && *val > 0 { val } else {
-                    if val < closest && val.abs() < closest.abs() { val } else { closest }
+                if val.abs() == closest.abs() && *val > 0
+                    || val < closest && val.abs() < closest.abs()
+                {
+                    val
+                } else {
+                    closest
                 }
             })
         }
@@ -31,7 +43,7 @@ pub fn closest_to_zero(numbers: &Vec<i32>) -> Option<&i32> {
 
 #[cfg(test)]
 mod tests {
-    use zero_kata::closest_to_zero;
+    use crate::zero_kata::closest_to_zero;
 
     #[test]
     fn closest_to_zero_simple() {
