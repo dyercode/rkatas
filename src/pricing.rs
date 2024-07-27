@@ -18,7 +18,7 @@ const SIN_TAX_PERCENT: f64 = 0.08;
 const FIFTEEN_PERCENT: f64 = 0.15;
 const TEN_PERCENT: f64 = 0.1;
 
-fn discount(item: Item) -> Item {
+fn discount(item: Item) -> Discounted {
     let discount_percent = if item.product_type == ProductType::Alcohol {
         0.0
     } else if item.price >= 1000.00 {
@@ -30,27 +30,39 @@ fn discount(item: Item) -> Item {
     };
 
     let discounted_price = item.price * (1.0 - discount_percent);
-    Item {
+    Discounted(Item {
         price: discounted_price,
         product_type: item.product_type,
-    }
+    })
 }
 
 pub fn pricing(item: Item) -> f64 {
     calculate_tax(&discount(item))
 }
 
-fn calculate_tax(item: &Item) -> f64 {
-    match item.product_type {
-        ProductType::Food => item.price,
-        ProductType::Alcohol => item.price * (1.0 + SALES_TAX_PERCENT + SIN_TAX_PERCENT),
-        _ => item.price * (1.0 + SALES_TAX_PERCENT),
+fn calculate_tax(item: &Discounted) -> f64 {
+    match item.product_type() {
+        ProductType::Food => item.price(),
+        ProductType::Alcohol => item.price() * (1.0 + SALES_TAX_PERCENT + SIN_TAX_PERCENT),
+        ProductType::Other => item.price() * (1.0 + SALES_TAX_PERCENT),
     }
 }
 
 pub struct Item {
     price: f64,
     product_type: ProductType,
+}
+
+pub struct Discounted(Item);
+
+impl Discounted {
+    fn product_type(&self) -> &ProductType {
+        &self.0.product_type
+    }
+
+    fn price(&self) -> f64 {
+        self.0.price
+    }
 }
 
 #[derive(PartialEq)]
@@ -166,12 +178,11 @@ mod test {
 
     #[test]
     fn alcohol_must_not_be_discounted() {
-        assert!(
-            pricing(Item {
-                price: 100.00,
-                product_type: ProductType::Alcohol
-            }) - 115.50
-                < EPSILON
-        )
+        let result = pricing(Item {
+            price: 100.00,
+            product_type: ProductType::Alcohol,
+        });
+
+        assert!(result - 115.50 < EPSILON)
     }
 }

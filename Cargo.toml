@@ -2,6 +2,6 @@
 name = "rkata"
 version = "0.1.0"
 authors = ["Jon <dyercode@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]

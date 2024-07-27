@@ -1,6 +1,5 @@
-
+.direnv
 /target/
 **/*.rs.bk
-Cargo.lock
 .idea
 *.iml
